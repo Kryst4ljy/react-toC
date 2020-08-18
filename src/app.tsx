@@ -1,4 +1,5 @@
 import { RequestConfig } from 'umi';
+import { API_URL } from '@/config';
 require('./libs/rem');
 
 // 网络请求拦截器
@@ -17,7 +18,7 @@ export const request: RequestConfig = {
   },
   middlewares: [],
   method: 'post',
-  // prefix: API_URL,
+  prefix: API_URL,
   useCache: true,
   ttl: 1000,
   requestInterceptors: [
