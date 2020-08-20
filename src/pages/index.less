@@ -1,6 +1,28 @@
 .box {
   width: 100%;
   height: 100%;
+  position: relative;
+
+  .contentBox {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 5;
+  }
+
+  .gameFrame {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+  }
+
+  .orderFrame {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 15;
+  }
 
   .loading {
     position: fixed;

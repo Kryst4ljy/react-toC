@@ -1,21 +1,11 @@
 import { RequestConfig } from 'umi';
 import { API_URL } from '@/config';
+import { Toast } from 'antd-mobile';
 require('./libs/rem');
 
 // 网络请求拦截器
 export const request: RequestConfig = {
   timeout: 5000,
-  errorConfig: {
-    adaptor: resData => {
-      const success = resData.ret === 1;
-      return {
-        ...resData,
-        success,
-        errorCode: resData.ret,
-        errorMessage: resData.msg,
-      };
-    },
-  },
   middlewares: [],
   method: 'post',
   prefix: API_URL,
@@ -30,7 +20,11 @@ export const request: RequestConfig = {
     },
   ],
   responseInterceptors: [
-    (response, options) => {
+    async (response, options) => {
+      const data = await response.clone().json();
+      if (data.ret !== 1) {
+        Toast.fail(data.msg);
+      }
       return response;
     },
   ],

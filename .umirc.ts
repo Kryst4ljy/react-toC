@@ -22,18 +22,18 @@ export default defineConfig({
   ],
   routes: [
     {
-      path: '/h5sdk',
+      path: '/h5sdk/login',
       component: '@/pages/index',
-      routes: [
-        {
-          path: 'login',
-          component: '@/pages/login/index',
-        },
-        {
-          path: 'register',
-          component: '@/pages/register/index',
-        },
-      ],
+      // routes: [
+      //   {
+      //     path: 'login',
+      //     component: '@/pages/login/index',
+      //   },
+      //   {
+      //     path: 'register',
+      //     component: '@/pages/register/index',
+      //   },
+      // ],
     },
   ],
 });

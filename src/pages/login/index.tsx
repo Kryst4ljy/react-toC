@@ -1,9 +1,11 @@
 import React from 'react';
+import CryptoJS from 'crypto-js';
 import styles from './login.less';
 import InputItem from '@/components/InputItem/InputItem';
 import { CDN_URL, skins } from '@/config/index';
 import { history, connect, initType } from 'umi';
 import { Toast } from 'antd-mobile';
+import { getCookie } from '@/libs/utils';
 
 class Login extends React.Component<any, any> {
   constructor(props: any) {
@@ -31,67 +33,91 @@ class Login extends React.Component<any, any> {
 
   // 跳转至注册页面
   goReg = () => {
-    const query = this.props.location.query;
-    history.push({
-      pathname: '/h5sdk/register',
-      query: {
-        ...query,
-      },
+    if (getCookie('username') == '' || getCookie('password') == '') {
+      this.props.dispatch({
+        type: 'init/toRegister',
+        payload: {
+          jh_channel: this.props.init.jh_channel,
+          jh_app_id: this.props.init.jh_app_id,
+        },
+      });
+    } else {
+      const username = getCookie('username') + '';
+      const passwords = getCookie('password') + '';
+      this.props.dispatch({
+        type: 'init/setState',
+        payload: {
+          regUsername: username,
+          regPassword: passwords,
+        },
+      });
+    }
+    this.props.changeBoxState({
+      loginShow: false,
+      registerShow: true,
+      chargeShow: false,
     });
   };
 
   // 点击登录
-  toLogin = () => {
-    // const debug_url = encodeURIComponent(
-    //   decodeURIComponent(getCookie('debug_url')),
-    // );
-    // const games_id = decodeURIComponent(getCookie('j_game_id'));
-    // // 匹配用户名规则
-    // if (
-    //   this.state.username == '' ||
-    //   !this.state.username.match(/^[A-Za-z0-9]{6,18}$/)
-    // ) {
-    //   Toast.info('账号、密码应为6-18位数字字母组合');
-    //   return;
-    // }
-    // // 匹配密码规则
-    // if (
-    //   this.state.password == '' ||
-    //   !this.state.password.match(/^[A-Za-z0-9]{6,18}$/)
-    // ) {
-    //   Toast.info('账号、密码应为6-18位数字字母组合');
-    //   return;
-    // }
-    // 匹配签名
-    // if (
-    //   debug_url == undefined ||
-    //   games_id == undefined ||
-    //   debug_url == 'null' ||
-    //   games_id == null ||
-    //   debug_url == '' ||
-    //   games_id == ''
-    // ) {
-    //   Toast.info('签名错误');
-    //   return;
-    // }
+  toLogin = async () => {
+    const debug_url = encodeURIComponent(
+      decodeURIComponent(getCookie('debug_url')),
+    );
+    const games_id = decodeURIComponent(getCookie('j_game_id'));
+    // 匹配用户名规则
+    if (
+      this.state.username == '' ||
+      !this.state.username.match(/^[A-Za-z0-9]{6,18}$/)
+    ) {
+      Toast.info('账号、密码应为6-18位数字字母组合');
+      return;
+    }
+    // 匹配密码规则
+    if (
+      this.state.password == '' ||
+      !this.state.password.match(/^[A-Za-z0-9]{6,18}$/)
+    ) {
+      Toast.info('账号、密码应为6-18位数字字母组合');
+      return;
+    }
+    // 匹配签名;
+    if (
+      debug_url == undefined ||
+      games_id == undefined ||
+      debug_url == 'null' ||
+      games_id == null ||
+      debug_url == '' ||
+      games_id == ''
+    ) {
+      Toast.info('签名错误，请核验参数是否正确');
+      return;
+    }
     this.props.dispatch({
       type: 'init/setState',
       payload: { loadingstaus: true },
     });
     const time = Math.floor(new Date().getTime() / 1000);
-    this.props.dispatch({
+    const flag = await this.props.dispatch({
       type: 'init/doLogin',
       payload: {
-        username: this.state.username,
-        password: this.state.password,
-        time: time,
+        user_name: this.state.username,
+        password: CryptoJS.MD5(
+          this.state.password + CryptoJS.MD5(this.state.password),
+        ).toString(),
+        jh_app_id: this.props.init.jh_app_id,
+        jh_channel: this.props.init.jh_channel,
+        time,
       },
     });
+    if (flag) {
+      this.props.regMsgHandler();
+    }
   };
 
   render() {
     const skin = skins.find(m => {
-      return (m.name = this.props.location.query.skin);
+      return (m.name = this.props.skin);
     });
     const mainColor = skin ? skin.color : '#D43E3E'; // 默认主题色
     const accImg = `${CDN_URL}/skins/account.png`; // 用户名输入框左边图标

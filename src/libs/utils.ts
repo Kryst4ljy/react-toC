@@ -16,7 +16,7 @@ export function getCookie(name: any) {
 }
 
 //设置cookie,增加到vue实例方便全局调用
-export function setCookie(c_name: any, value: any, expiredays: any) {
+export function setCookie(c_name: any, value: any, expiredays?: any) {
   let exdate = new Date();
   exdate.setDate(exdate.getDate() + expiredays);
   document.cookie =
