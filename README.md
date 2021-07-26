@@ -1,15 +1,7 @@
-# umi project
+# react toC 移动端小项目
 
-## Getting Started
+本项目为基于`umi`以及`antd-mobile`的移动端toC小项目。
 
-Install dependencies,
+它是一个基于iframe交互的游戏对接SDK，实现了登录框以及底层iframe时间监听以及传递。
 
-```bash
-$ yarn
-```
-
-Start the dev server,
-
-```bash
-$ yarn start
-```
+UI基于`rem`适配方案。
